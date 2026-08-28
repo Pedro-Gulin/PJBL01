@@ -1,0 +1,19 @@
+# Dependencias
+node_modules/
+
+# Variaveis de ambiente - NUNCA versionar (contem a senha do MySQL).
+# O .env.example fica versionado como modelo.
+.env
+.env.local
+
+# Build do React
+client/build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / SO
+.vscode/
+.idea/
+.DS_Store
