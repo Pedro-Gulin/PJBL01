@@ -2,9 +2,6 @@ import React, { useState } from 'react'
 
 import { criarBanda, atualizarBanda } from './api'
 
-// Pagina 02: lista as bandas com um botao "Editar" em cada linha.
-// Ao clicar em "Editar" os dados da banda vao para o formulario de cima.
-// Com o formulario vazio ele cadastra uma banda nova.
 function Edicao(props) {
   const bandas = props.bandas
 

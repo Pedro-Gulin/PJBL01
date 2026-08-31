@@ -1,11 +1,3 @@
--- Migracao: adiciona a coluna "estilos" em um banco que JA existe.
---
--- Use este arquivo se voce rodou o schema.sql antes desta coluna existir.
--- Em uma instalacao nova o schema.sql ja cria a coluna, e este arquivo
--- nao e necessario (rodar ele duas vezes da erro de coluna duplicada).
---
---   mysql -u root -p < server/migration_estilos.sql
-
 USE bandas;
 
 ALTER TABLE bandas_rock

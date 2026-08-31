@@ -5,9 +5,6 @@ import Listagem from './Listagem'
 import Edicao from './Edicao'
 import Exclusao from './Exclusao'
 
-// O App e so a "casca" do site: ele carrega a lista de bandas do backend
-// e decide qual das 3 paginas mostrar. A pagina atual fica guardada
-// no estado "pagina" ('listagem', 'edicao' ou 'exclusao').
 function App() {
   const [pagina, setPagina] = useState('listagem')
 
@@ -33,8 +30,6 @@ function App() {
     carregar()
   }, [])
 
-  // Troca de pagina e ja recarrega a lista, assim a pagina nova
-  // sempre abre com os dados atualizados.
   function irPara(novaPagina) {
     setPagina(novaPagina)
     carregar()

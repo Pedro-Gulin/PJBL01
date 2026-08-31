@@ -1,11 +1,8 @@
 import React, { useState } from 'react'
 
-// Pagina 01: mostra a tabela com todas as bandas.
-// Clicando em "Ver" abre um modal com os dados daquela banda sozinha.
 function Listagem(props) {
   const bandas = props.bandas
 
-  // Quando e null o modal fica fechado. Quando tem uma banda, o modal abre.
   const [bandaDoModal, setBandaDoModal] = useState(null)
 
   return (

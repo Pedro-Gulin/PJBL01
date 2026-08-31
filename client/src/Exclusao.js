@@ -2,8 +2,6 @@ import React from 'react'
 
 import { excluirBanda } from './api'
 
-// Pagina 03: lista as bandas com um botao "Excluir" em cada linha.
-// Antes de apagar pergunta se a pessoa tem certeza.
 function Exclusao(props) {
   const bandas = props.bandas
 
@@ -35,7 +33,7 @@ function Exclusao(props) {
       )}
 
       <p className="mb-4 rounded border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-        Atencao: a exclusao e definitiva e nao tem como desfazer.
+        Atencao: a exclusao eh definitiva e nao tem como desfazer.
       </p>
 
       <div className="overflow-x-auto">
