@@ -2,17 +2,30 @@
 
 Aplicação web full-stack desenvolvida para a disciplina de **Experiência Criativa (PUC)**.
 O sistema é um CRUD completo de bandas de rock: cada banda tem nome, ano de início,
-disco principal e público estimado. Os dados ficam persistidos em um banco MySQL.
+estilos musicais, disco principal e público estimado. Os dados ficam persistidos em um
+banco MySQL.
 
 O projeto é dividido em duas partes independentes:
 
 - **`server/`** — API REST em Node.js + Express, conectada ao MySQL com `mysql2`.
 - **`client/`** — interface em React (Create React App) estilizada com Tailwind CSS.
 
+## As 3 páginas
+
+A interface é dividida em três páginas. A troca entre elas é feita por botões, usando
+uma variável de estado no `App.js` (o projeto não usa biblioteca de rotas).
+
+| Página | Arquivo | O que faz |
+| --- | --- | --- |
+| 1. Listagem | `client/src/Listagem.js` | Tabela com todas as bandas. O botão **Ver** de cada linha abre um modal com os dados daquela banda. No fim da tabela, dois botões levam para as páginas de edição e exclusão. |
+| 2. Edição | `client/src/Edicao.js` | Lista as bandas com um botão **Editar** em cada linha, que carrega os dados no formulário acima. Com o formulário vazio, ele cadastra uma banda nova. |
+| 3. Exclusão | `client/src/Exclusao.js` | Lista as bandas com um botão **Excluir** em cada linha, pedindo confirmação antes de apagar. |
+
 ## Funcionalidades
 
 - Listar todas as bandas cadastradas (ordenadas por nome)
 - Buscar uma banda pelo id
+- Ver os dados de uma banda isolada em um modal
 - Cadastrar uma nova banda
 - Editar uma banda existente
 - Excluir uma banda
@@ -32,12 +45,16 @@ O projeto é dividido em duas partes independentes:
 PJBL01/
 ├── client/                 # aplicação React
 │   └── src/
-│       ├── App.js          # tela principal (lista + formulário)
+│       ├── App.js          # casca do site: carrega os dados e troca de página
+│       ├── Listagem.js     # página 1 - tabela + modal
+│       ├── Edicao.js       # página 2 - formulário + botão Editar por linha
+│       ├── Exclusao.js     # página 3 - botão Excluir por linha
 │       └── api.js          # funções de acesso à API
 ├── server/                 # API REST
 │   ├── server.js           # configuração do Express
 │   ├── db.js               # pool de conexões MySQL
 │   ├── schema.sql          # criação do banco + dados iniciais
+│   ├── migration_estilos.sql  # adiciona a coluna "estilos" em banco já existente
 │   ├── routes/bandas.js    # rotas do CRUD
 │   └── .env.example        # modelo de variáveis de ambiente
 └── logs/
@@ -64,6 +81,14 @@ sete bandas de exemplo (só na primeira execução — se a tabela já tiver dad
 ```bash
 mysql -u root -p < server/schema.sql
 ```
+
+> **Já tinha o banco criado antes da coluna `estilos` existir?**
+> O `CREATE TABLE IF NOT EXISTS` não altera uma tabela que já existe, então rode a
+> migração uma única vez para adicionar a coluna e preencher as bandas de exemplo:
+>
+> ```bash
+> mysql -u root -p < server/migration_estilos.sql
+> ```
 
 ### 3. Configurar as variáveis de ambiente
 
@@ -125,10 +150,13 @@ Corpo esperado no `POST` e no `PUT`:
 {
   "nome": "Pink Floyd",
   "inicio": 1965,
+  "estilos": "Rock Progressivo, Rock Psicodelico",
   "disco": "The Dark Side of the Moon",
   "publico": 200000
 }
 ```
+
+Todos os campos são obrigatórios, exceto `publico` (assume `0` se omitido).
 
 Exemplo de erro de validação (`400`):
 
@@ -143,7 +171,7 @@ curl http://localhost:5000/api/bandas
 ```
 
 ```bash
-curl -X POST http://localhost:5000/api/bandas -H "Content-Type: application/json" -d '{"nome":"Nirvana","inicio":1987,"disco":"Nevermind","publico":300000}'
+curl -X POST http://localhost:5000/api/bandas -H "Content-Type: application/json" -d '{"nome":"Nirvana","inicio":1987,"estilos":"Grunge, Rock Alternativo","disco":"Nevermind","publico":300000}'
 ```
 
 ## Build de produção do front-end
@@ -159,6 +187,9 @@ Os arquivos estáticos são gerados em `client/build/` (pasta ignorada pelo git)
 - **`Erro interno no servidor` ao listar bandas** — a API não conseguiu falar com o MySQL.
   Confira se o serviço está rodando e se as credenciais no `server/.env` estão corretas.
 - **`Table 'bandas.bandas_rock' doesn't exist`** — o passo 2 não foi executado; rode o `schema.sql`.
+- **`Unknown column 'estilos' in 'field list'`** — o banco é anterior à coluna `estilos`;
+  rode o `server/migration_estilos.sql` descrito no passo 2.
+- **`Duplicate column name 'estilos'`** — a migração já foi aplicada; não precisa rodar de novo.
 - **Front-end carrega mas a lista fica vazia com erro de rede** — a API não está no ar
   ou está em uma porta diferente da configurada no `proxy` do `client/package.json`.
 

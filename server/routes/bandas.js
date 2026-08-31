@@ -7,6 +7,7 @@ const router = express.Router()
 function validar(body) {
   const erros = []
   const nome = String(body.nome ?? '').trim()
+  const estilos = String(body.estilos ?? '').trim()
   const disco = String(body.disco ?? '').trim()
   const inicio = Number(body.inicio)
   const publico = Number(body.publico ?? 0)
@@ -15,6 +16,8 @@ function validar(body) {
 
   if (!nome) erros.push('nome e obrigatorio')
   if (nome.length > 120) erros.push('nome deve ter no maximo 120 caracteres')
+  if (!estilos) erros.push('estilos e obrigatorio')
+  if (estilos.length > 120) erros.push('estilos deve ter no maximo 120 caracteres')
   if (!disco) erros.push('disco e obrigatorio')
   if (disco.length > 160) erros.push('disco deve ter no maximo 160 caracteres')
   if (!Number.isInteger(inicio) || inicio < 1900 || inicio > anoAtual) {
@@ -24,13 +27,13 @@ function validar(body) {
     erros.push('publico deve ser um inteiro maior ou igual a zero')
   }
 
-  return { erros, valores: { nome, inicio, disco, publico } }
+  return { erros, valores: { nome, inicio, estilos, disco, publico } }
 }
 
 router.get('/', async (req, res, next) => {
   try {
     const [rows] = await pool.query(
-      'SELECT id, nome, inicio, disco, publico FROM bandas_rock ORDER BY nome'
+      'SELECT id, nome, inicio, estilos, disco, publico FROM bandas_rock ORDER BY nome'
     )
     res.json(rows)
   } catch (err) {
@@ -41,7 +44,7 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const [rows] = await pool.query(
-      'SELECT id, nome, inicio, disco, publico FROM bandas_rock WHERE id = ?',
+      'SELECT id, nome, inicio, estilos, disco, publico FROM bandas_rock WHERE id = ?',
       [req.params.id]
     )
     if (rows.length === 0) {
@@ -59,8 +62,8 @@ router.post('/', async (req, res, next) => {
     if (erros.length > 0) return res.status(400).json({ erros })
 
     const [resultado] = await pool.query(
-      'INSERT INTO bandas_rock (nome, inicio, disco, publico) VALUES (?, ?, ?, ?)',
-      [valores.nome, valores.inicio, valores.disco, valores.publico]
+      'INSERT INTO bandas_rock (nome, inicio, estilos, disco, publico) VALUES (?, ?, ?, ?, ?)',
+      [valores.nome, valores.inicio, valores.estilos, valores.disco, valores.publico]
     )
     res.status(201).json({ id: resultado.insertId, ...valores })
   } catch (err) {
@@ -74,8 +77,8 @@ router.put('/:id', async (req, res, next) => {
     if (erros.length > 0) return res.status(400).json({ erros })
 
     const [resultado] = await pool.query(
-      'UPDATE bandas_rock SET nome = ?, inicio = ?, disco = ?, publico = ? WHERE id = ?',
-      [valores.nome, valores.inicio, valores.disco, valores.publico, req.params.id]
+      'UPDATE bandas_rock SET nome = ?, inicio = ?, estilos = ?, disco = ?, publico = ? WHERE id = ?',
+      [valores.nome, valores.inicio, valores.estilos, valores.disco, valores.publico, req.params.id]
     )
     if (resultado.affectedRows === 0) {
       return res.status(404).json({ erro: 'Banda nao encontrada' })
